@@ -54,6 +54,14 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     
     // MARK: - Methods
     func getBall() -> SCNNode? {
+        
+        // Get current frame
+        guard let frame = sceneView.session.currentFrame else { return nil }
+        
+        // Get camera transform
+        let cameraTransform = frame.camera.transform
+        let matrixCameraTransform = SCNMatrix4(cameraTransform)
+        
         // Ball geometry
         let ball = SCNSphere(radius: 0.125)
         ball.firstMaterial?.diffuse.contents = UIImage(named: "basketball")
@@ -61,11 +69,23 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         // Ball node
         let ballNode = SCNNode(geometry: ball)
         
-        // Get current frame
-        guard let frame = sceneView.session.currentFrame else { return nil }
+        // Add physics body
+        ballNode.physicsBody = SCNPhysicsBody(type: .dynamic, shape: SCNPhysicsShape(node: ballNode))
+        
+        // Calculate force for pushing the ball
+        let power = Float(5)
+        let x = -matrixCameraTransform.m31 * power
+        let y = -matrixCameraTransform.m32 * power
+        let z = -matrixCameraTransform.m33 * power
+        let forceDirection = SCNVector3(x, y, z)
+        
+        // Apply force
+        ballNode.physicsBody?.applyForce(forceDirection, asImpulse: true)
+        
+
         
         // Assign camera position to ball
-        ballNode.simdTransform = frame.camera.transform
+        ballNode.simdTransform = cameraTransform
         
         return ballNode
     }
@@ -74,8 +94,16 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         let hoopNode = scene.rootNode.clone()
         
-        // Rotate hoop node to make it vertical
-        hoopNode.eulerAngles.x -= .pi / 2
+        // Add physics body
+        hoopNode.physicsBody = SCNPhysicsBody(
+            type: .static,
+            shape: SCNPhysicsShape(
+                node: hoopNode,
+                options: [SCNPhysicsShape.Option.type: SCNPhysicsShape.ShapeType.concavePolyhedron]
+            )
+        )
+        
+
         
         return hoopNode
     }
