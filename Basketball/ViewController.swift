@@ -70,7 +70,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         return ballNode
     }
     func getHoopNode() -> SCNNode {
-        let scene = SCNScene(named: "Hoop.scn", inDirectory: "art.scnassets")!
+        let scene = SCNScene(named: "hoop.scn", inDirectory: "art.scnassets")!
         
         let hoopNode = scene.rootNode.clone()
         
