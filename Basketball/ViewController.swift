@@ -94,6 +94,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         let hoopNode = scene.rootNode.clone()
         
+        
         // Add physics body
         hoopNode.physicsBody = SCNPhysicsBody(
             type: .static,
@@ -102,7 +103,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
                 options: [SCNPhysicsShape.Option.type: SCNPhysicsShape.ShapeType.concavePolyhedron]
             )
         )
-        
+    
 
         
         return hoopNode
